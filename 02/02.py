@@ -35,27 +35,19 @@ print(safe_count)
 
 
 # Part 2
-
-# calculate array of diffs
-# count negative, neutral and positive diffs
-# Compute absolute diff between positive and negative diffs and determine if we are more inclined to be increasing or decreasing
-# check the absolute diff against the neutral count
-
-def is_valid(diffs, lower_bound, higher_bound):
+# Quadratic :(
+def is_valid(nums, lower_bound, higher_bound):
+    diffs = [nums[i] - nums[i-1] for i in range(1, len(nums))]
     valid_diffs = list(filter(lambda diff: lower_bound <= diff <= higher_bound, diffs))
-    return len(valid_diffs) >= len(diffs) - 1
-
+    return len(valid_diffs) == len(diffs) 
 
 
 safe_count = 0
 for line in all_lines:
     nums = [int(num) for num in line.split(" ")]
+    permutations_without_element = [nums[:i] + nums[i+1:] for i in range(len(nums))]
 
-    diff_array = []
-    for i in range(1, len(nums)):
-        diff_array.append(nums[i] - nums[i-1])
-    
-    if (is_valid(diff_array, 1, 3) or is_valid(diff_array, -3, -1)):
+    if (any([is_valid(arr, 1, 3) or is_valid(arr, -3, -1) for arr in permutations_without_element])):
         safe_count += 1
     
 print(safe_count)
