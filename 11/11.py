@@ -1,3 +1,5 @@
+from functools import cache
+
 source = "input.txt"
 
 line = ""
@@ -17,20 +19,28 @@ def split_stones(stone):
 
     left_stone, right_stone = str_stone[:half_stone_len], str_stone[half_stone_len:]
 
-    return [int(left_stone), int(right_stone)]
+    return int(left_stone), int(right_stone)
 
 
-for _ in range(25):
-    new_stones = []
-    for stone in stones:
-        if stone == 0:
-            new_stones.append(1)
-        elif is_even_digits(stone):
-            new_stones += split_stones(stone)
-        else:
-            new_stones.append(stone * 2024)
+@cache
+def blink(stone, level, limit):
+    if level >= limit:
+        return 1
 
-    stones = new_stones
+    if stone == 0:
+        return blink(1, level + 1, limit)
 
+    if is_even_digits(stone):
+        stone1, stone2 = split_stones(stone)
+        return blink(stone1, level + 1, limit) + blink(stone2, level + 1, limit)
+
+    stone *= 2024
+    return blink(stone, level + 1, limit)
+
+
+# Part 1
 # 187738
-print(len(stones))
+print(sum([blink(stone, 0, 25) for stone in stones]))
+
+# Part 2
+print(sum([blink(stone, 0, 75) for stone in stones]))
