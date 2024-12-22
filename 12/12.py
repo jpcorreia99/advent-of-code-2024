@@ -53,4 +53,76 @@ for i in range(n_rows):
 # 1522850
 print(res)
 
+
 # Part 2
+
+
+def is_same_char(all_lines, i, j, direction):
+    n_rows, n_cols = len(all_lines), len(all_lines[0])
+
+    new_i, new_j = i + direction[0], j + direction[1]
+
+    return (
+        0 <= new_i < n_rows
+        and 0 <= new_j < n_cols
+        and all_lines[i][j] == all_lines[new_i][new_j]
+    )
+
+
+def get_corner_info(all_lines, i, j):
+    directions = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]
+
+    return {
+        direction: is_same_char(all_lines, i, j, direction) for direction in directions
+    }
+
+
+def claculate_section_area_and_corners(all_lines, i, j, visited, flower_type):
+    if (i, j) in visited:
+        return 0, 0
+    visited.add((i, j))
+
+    area = 1
+    corners = 0
+    corner_info = get_corner_info(all_lines(i, j), visited)
+    if is_isolated(corner_info):
+        return 1, 4  # 4 corners because it's a single area
+    elif has_only_one_neighbour(corner_info):
+        corners = 2
+    elif has_two_opposite_corners(corner_info):
+        corners = 0
+    elif has_all_neighbours(corner_info):
+        corners = 0
+    elif has_three_neighbours(corner_info):
+        corners = 0
+    elif has_two_adjacent_neighbours(corner_info):
+        corners = 2
+
+    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    for i_dev, j_dev in directions:
+        new_i, new_j = i + i_dev, j + j_dev
+        if not (0 <= new_i < n_rows and 0 <= new_j < n_cols):
+            continue
+        if (new_i, new_j) in visited:
+            continue
+
+            sub_area, sub_corners = claculate_section_area_and_corners(
+                all_lines, new_i, new_j, visited, flower_type
+            )
+            area += sub_area
+            corners += sub_corners
+
+    return area, corners
+
+
+visited = set()
+res = 0
+for i in range(n_rows):
+    for j in range(n_cols):
+        area, corners = claculate_section_area_and_corners(
+            all_lines, i, j, visited, all_lines[i][j]
+        )
+        res += area * corners
+
+# 953738
+print(res)
