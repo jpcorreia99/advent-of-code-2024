@@ -115,7 +115,7 @@ def claculate_section_area_and_corners(all_lines, i, j, visited, flower_type):
     return area, corners
 
 
-visited = set()
+visited = map()
 res = 0
 for i in range(n_rows):
     for j in range(n_cols):
